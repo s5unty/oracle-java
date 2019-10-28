@@ -4,17 +4,6 @@
 # Task file to install Oracle Java Development Kit in a system with a Debian based Linux distribution.
 #
 
-- block:
-  - name: debian | ensure the webupd8 launchpad apt repository is present
-    apt_repository:
-      repo="{{ item }} http://apt.it.genscript.com/ubuntu trusty/"
-      update_cache=yes
-      state=present
-    with_items:
-      - deb
-      - deb-src
-    become: yes
-
 - name: debian | set license as accepted
   debconf: name='oracle-java{{ oracle_java_version }}-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
   become: yes
@@ -26,27 +15,29 @@
       state=directory
       mode=0755
 
-  - name: debian | speed up downloaded
-    get_url: >
-      url=http://apt.it.genscript.com/ubuntu/java/jdk-8u131-linux-x64.tar.gz
-      dest=/var/cache/oracle-jdk8-installer/jdk-8u131-linux-x64.tar.gz
-      checksum=md5:75b2cb2249710d822a60f83e28860053
+- name: debian | speed up downloaded
+  get_url: >
+    url=http://nexus.genscript.com/repository/it/java/jdk-8u131-linux-x64.tar.gz
+    dest=/var/cache/oracle-jdk8-installer/jdk-8u131-linux-x64.tar.gz
+    checksum=md5:75b2cb2249710d822a60f83e28860053
+
+- name: debian | speed up downloaded
+  get_url: >
+    url=http://nexus.genscript.com/repository/it/java/{{ item }}
+    dest=/root/{{ item }}
+  with_items:
+    - oracle-java8-installer_8u131-1_webupd8_2_all.deb
+    - oracle-java8-set-default_8u131-1_webupd8_2_all.deb
 
 - name: debian | ensure Java is installed
   apt:
-    name="oracle-java{{ oracle_java_version }}-installer"
-    state={{ oracle_java_state }}
-    cache_valid_time={{ oracle_java_cache_valid_time }}
-    update_cache=yes
-    allow_unauthenticated=yes
+    deb: /root/oracle-java8-installer_8u131-1_webupd8_2_all.deb
   register: oracle_java_task_apt_install
   become: yes
 
 - name: debian | set Java version as default
   apt:
-    name="oracle-java{{ oracle_java_version }}-set-default"
-    state=latest
-    allow_unauthenticated=yes
+    deb: /root/oracle-java8-set-default_8u131-1_webupd8_2_all.deb
   register: oracle_java_task_set_default
   when: oracle_java_set_as_default
   become: yes
