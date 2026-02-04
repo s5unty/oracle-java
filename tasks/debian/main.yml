@@ -17,13 +17,13 @@
 
 - name: debian | speed up downloaded
   get_url: >
-    url=http://nexus.genscript.com/repository/it/java/jdk-8u131-linux-x64.tar.gz
+    url=https://nexus.genscript.com/repository/it/java/jdk-8u131-linux-x64.tar.gz
     dest=/var/cache/oracle-jdk8-installer/jdk-8u131-linux-x64.tar.gz
     checksum=md5:75b2cb2249710d822a60f83e28860053
 
 - name: debian | speed up downloaded
   get_url: >
-    url=http://nexus.genscript.com/repository/it/java/{{ item }}
+    url=https://nexus.genscript.com/repository/it/java/{{ item }}
     dest=/root/{{ item }}
   with_items:
     - oracle-java8-installer_8u131-1_webupd8_2_all.deb
